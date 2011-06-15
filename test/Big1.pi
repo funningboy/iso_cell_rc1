@@ -1,0 +1,25 @@
+
+define_isolation_cell -cells { Iso_TH_1P }  -enable Ib \
+			-valid_location to
+
+define_isolation_cell -cells { Iso_FL_1P }  -enable Ib \
+                        -valid_location to
+
+create_power_domain -name TDD -instances { u1/u4 u2/u3 u2/u5 u4/u1 u4/u5} 
+
+create_power_domain -name TDR -default
+
+create_nominal_condition -name onL -voltage 1.0
+create_nominal_condition -name off -voltage 0
+
+create_power_mode -name M1 -domain_conditions {TDD@onL TDR@onL} -default
+create_power_mode -name M2 -domain_conditions {TDD@off TDR@onL}
+create_power_mode -name M3 -domain_conditions {TDD@onL TDR@off}
+
+create_isolation_rule -name iso1 -from TDD -to TDR \
+                      -isolation_condition iso \
+                      -isolation_output high
+
+create_isolation_rule -name iso2 -from TDR -to TDD \
+                      -isolation_condition !iso \
+                      -isolation_output low
